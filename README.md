@@ -34,7 +34,7 @@ flowchart TD
 
 ```
 
-##📦 Installation
+## Installation
 - git clone https://github.com/yourusername/multi_agent_ai.git
 - cd multi_agent_ai
 - python -m venv env
