@@ -35,10 +35,10 @@ flowchart TD
 ```
 
 ##📦 Installation
--git clone https://github.com/yourusername/multi_agent_ai.git
--cd multi_agent_ai
--python -m venv env
--source env/bin/activate   # On Windows use: env\Scripts\activate
--pip install -r requirements.txt
+- git clone https://github.com/yourusername/multi_agent_ai.git
+- cd multi_agent_ai
+- python -m venv env
+- source env/bin/activate   # On Windows use: env\Scripts\activate
+- pip install -r requirements.txt
 
--uvicorn app.main:app --reload
+- uvicorn app.main:app --reload
