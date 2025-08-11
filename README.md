@@ -42,3 +42,11 @@ flowchart TD
 - pip install -r requirements.txt
 
 - uvicorn app.main:app --reload
+
+## Endpoints
+| Method | Endpoint     | Description                        |
+| ------ | ------------ | ---------------------------------- |
+| POST   | `/chat`      | General conversation with AI Agent |
+| POST   | `/finance`   | AI-driven financial insights       |
+| POST   | `/summarize` | Summarize long text                |
+
