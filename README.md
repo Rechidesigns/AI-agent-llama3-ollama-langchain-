@@ -1,8 +1,8 @@
-# 🧠 Multi-Agent AI with FastAPI + LangChain + Ollama (Llama3)
+# Multi-Agent AI with FastAPI + LangChain + Ollama (Llama3)
 
 This project is a **FastAPI-powered AI Agent API** that lets users interact with different AI agents for various tasks, all powered by the **Ollama Llama3** model through **LangChain**.
 
-## 🚀 Features
+## Features
 
 * **Chat Agent** — General-purpose conversational AI.
 * **Finance Agent** — Parses financial inputs and provides AI-driven insights.
