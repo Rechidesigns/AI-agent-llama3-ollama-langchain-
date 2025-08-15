@@ -1,26 +1,16 @@
-# Web framework
 fastapi
 uvicorn[standard]
-
-# LangChain core + community integrations
+starlette
 langchain
 langchain-community
 langchain-postgres
-
-# Database
-psycopg2-binary  # needed in Docker for Postgres
-
-# Data handling
+psycopg[binary] 
 pandas
-
-# Environment variables
 python-dotenv
-
-# File uploads / forms
 python-multipart
-
-# HTTP requests
 requests
-
-# ORM
 sqlalchemy
+loguru
+openai
+tiktoken
+ollama

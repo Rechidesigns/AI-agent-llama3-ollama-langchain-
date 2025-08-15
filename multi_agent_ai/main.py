@@ -1,7 +1,9 @@
 import os
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request, Response
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
+from multi_agent_ai.utils.session import get_or_create_session_id
 from .app.agents.agent import get_conversation
 from .app.agents.summarize_agent import get_summary_agent
 from .app.agents.code_explainer_agent import get_code_explainer
@@ -28,10 +30,11 @@ class FinanceInput(BaseModel):
     data: str
 
 @app.post('/chat')
-async def chat(prompt: Prompt):
-    conv = get_conversation()
+async def chat(prompt: Prompt, request: Request, response: Response):
+    session_id = get_or_create_session_id(request, response)
+    conv = get_conversation(session_id=session_id)
     resp = conv.predict(input=prompt.message)
-    return {"response": resp}
+    return {"session_id": session_id, "response": resp}
 
 @app.post('/summarize')
 async def summarize(data: TextInput):

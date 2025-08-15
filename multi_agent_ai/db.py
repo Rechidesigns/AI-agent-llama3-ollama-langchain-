@@ -4,12 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_URL = os.getenv('POSTGRES_URL') or 'postgresql://postgres:postgres@localhost:5432/ai_agent'
+DB_URL = os.getenv('POSTGRES_URL') or 'postgresql+psycopg://postgres:postgres@localhost:5432/ai_agent'
 
 engine = create_engine(DB_URL, future=True)
 
 def init_db():
-    # Create chat history table if using langchain-postgres schema builder, otherwise rely on library
     with engine.connect() as conn:
         conn.execute(text("""
         CREATE TABLE IF NOT EXISTS message_store (
