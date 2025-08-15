@@ -1,3 +1,4 @@
-env
+# Ignore Python virtual environment and environment variable files
+env/
 .env
-/env
+

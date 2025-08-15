@@ -1,0 +1,26 @@
+# Web framework
+fastapi
+uvicorn[standard]
+
+# LangChain core + community integrations
+langchain
+langchain-community
+langchain-postgres
+
+# Database
+psycopg2-binary  # needed in Docker for Postgres
+
+# Data handling
+pandas
+
+# Environment variables
+python-dotenv
+
+# File uploads / forms
+python-multipart
+
+# HTTP requests
+requests
+
+# ORM
+sqlalchemy

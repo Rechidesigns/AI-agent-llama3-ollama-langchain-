@@ -1,4 +1,4 @@
-from langchain.chat_models import ChatOllama
+from langchain_community.chat_models import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 import os

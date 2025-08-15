@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from langchain.chat_models import ChatOllama
+from langchain_community.chat_models import ChatOllama
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 # prefer the stable separate package for postgres chat history
@@ -10,7 +10,7 @@ try:
     from langchain_postgres import PostgresChatMessageHistory
 except Exception:
     # fallback to langchain.community if installed
-    from langchain.memory.chat_message_histories import PostgresChatMessageHistory
+    from langchain_community.chat_message_histories import PostgresChatMessageHistory
 
 
 def get_conversation():

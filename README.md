@@ -59,7 +59,8 @@ pip install -r requirements.txt
 Run the server:
 
 ```bash
-uvicorn app.main:app --reload
+#uvicorn app.main:app --reload
+uvicorn multi_agent_ai.main:app --reload
 ```
 
 ---

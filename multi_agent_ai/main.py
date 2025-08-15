@@ -2,11 +2,11 @@ import os
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from app.agent import get_conversation
-from app.summarize_agent import get_summary_agent
-from app.code_explainer_agent import get_code_explainer
-from app.finance_agent import get_finance_agent
-from app.db import init_db
+from .app.agents.agent import get_conversation
+from .app.agents.summarize_agent import get_summary_agent
+from .app.agents.code_explainer_agent import get_code_explainer
+from .app.agents.finance_agent import get_finance_agent
+from .db import init_db
 
 load_dotenv()
 
