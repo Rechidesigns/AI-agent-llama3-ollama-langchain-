@@ -9,15 +9,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy and install Python dependencies
-# Copy requirements first so Docker can cache dependencies separately from source code
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r /app/requirements.txt
 
-# Copy your app code
-COPY ./multi_agent_ai /app
+# Copy the whole project
+COPY . /app
 
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
 # Run the app
 CMD ["uvicorn", "multi_agent_ai.main:app", "--host", "0.0.0.0", "--port", "8000"]
