@@ -116,6 +116,9 @@ ollama run llama3
 * In Docker, use `host.docker.internal` or `--add-host=host.docker.internal:host-gateway` on Linux so the container can reach your Ollama host.
 * If you add the `/route` router (free-form routing agent), it can decide between these agents automatically based on user input.
 
+
+*url for the swagger docs and endpoints to test it
+- https://ai-agent-llama3-ollama-langchain-production.up.railway.app/docs
 ---
 <img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/dc7651dc-06f1-4a0a-bc5f-0c5c1a1288bf" />
 
