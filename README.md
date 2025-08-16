@@ -117,4 +117,5 @@ ollama run llama3
 * If you add the `/route` router (free-form routing agent), it can decide between these agents automatically based on user input.
 
 ---
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/dc7651dc-06f1-4a0a-bc5f-0c5c1a1288bf" />
 
