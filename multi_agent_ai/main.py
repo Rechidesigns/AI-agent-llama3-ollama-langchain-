@@ -4,11 +4,13 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 from multi_agent_ai.utils.session import get_or_create_session_id
-from .app.agents.agent import get_conversation
+from .app.agents.agent import get_conversation_runnable
 from .app.agents.summarize_agent import get_summary_agent
 from .app.agents.code_explainer_agent import get_code_explainer
 from .app.agents.finance_agent import get_finance_agent
 from .db import init_db
+import pandas as pd
+import io
 
 load_dotenv()
 
@@ -32,44 +34,69 @@ class FinanceInput(BaseModel):
 @app.post('/chat')
 async def chat(prompt: Prompt, request: Request, response: Response):
     session_id = get_or_create_session_id(request, response)
-    conv = get_conversation(session_id=session_id)
-    resp = conv.predict(input=prompt.message)
-    return {"session_id": session_id, "response": resp}
+    chain, recent_history = get_conversation_runnable(session_id=session_id)
+
+    # Pass a dict to match the prompt variables
+    out = chain.invoke({
+        "text": prompt.message,
+        "chat_history": recent_history
+    })
+
+    return {"session_id": session_id, "response": out}
+
+
 
 @app.post('/summarize')
 async def summarize(data: TextInput):
     chain = get_summary_agent()
-    out = chain.run(text=data.text)
+    # Pass the text as the single positional input
+    out = chain.invoke(data.text)
     return {"summary": out}
+
+
 
 @app.post('/code-explainer')
 async def explain_code(data: CodeInput):
     chain = get_code_explainer()
-    out = chain.run(code=data.code)
+    out = chain.invoke(data.code)
+    # out = chain.invoke({"code": data.code})
     return {"explanation": out}
 
 @app.post('/finance')
 async def analyze_finance(data: FinanceInput):
     chain = get_finance_agent()
-    out = chain.run(data=data.data)
+    out = chain.invoke(data.data)
     return {"analysis": out}
 
 @app.post('/finance/upload-csv')
 async def upload_csv(file: UploadFile = File(...)):
-    # parse with pandas and convert to plain text/CSV to feed to finance agent
     import pandas as pd
-    contents = await file.read()
     import io
-    df = pd.read_csv(io.BytesIO(contents))
-    # convert to a simple transaction list
+
+    contents = await file.read()
+    
+    encodings_to_try = ['utf-8', 'utf-16', 'latin1']
+    df = None
+    for enc in encodings_to_try:
+        try:
+            df = pd.read_csv(io.BytesIO(contents), encoding=enc, on_bad_lines='skip', sep=None, engine='python')
+            break
+        except Exception:
+            continue
+
+    if df is None:
+        return {"error": "Unable to parse CSV file. Please upload a valid CSV."}
+
+    # Convert to transaction list
     rows = []
     if 'amount' in df.columns and 'description' in df.columns:
         for _, r in df.iterrows():
             rows.append(f"{r['description']} - {r['amount']}")
     else:
-        # fallback: stringify rows
         rows = df.astype(str).apply(lambda r: ', '.join(r.values), axis=1).tolist()
 
     chain = get_finance_agent()
-    out = chain.run(data='\n'.join(rows))
+    out = chain.invoke('\n'.join(rows))
+    
     return {"analysis": out}
+

@@ -1,6 +1,6 @@
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_core.runnables import RunnableSequence
 import os
 
 MODEL = os.getenv('OLLAMA_MODEL', 'mistral')
@@ -13,5 +13,5 @@ def get_summary_agent():
         input_variables=['text'],
         template='Summarize the following text in a concise bullet list:\n\n{text}'
     )
-    chain = LLMChain(llm=llm, prompt=prompt)
+    chain = RunnableSequence(prompt, llm) 
     return chain

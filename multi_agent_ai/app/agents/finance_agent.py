@@ -1,6 +1,6 @@
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_core.runnables import RunnableSequence
 import os
 
 MODEL = os.getenv('OLLAMA_MODEL', 'mistral')
@@ -19,5 +19,5 @@ def get_finance_agent():
         )
     )
 
-    chain = LLMChain(llm=llm, prompt=prompt)
-    return chainc
+    chain = RunnableSequence(llm, prompt)
+    return chain

@@ -14,3 +14,4 @@ loguru
 openai
 tiktoken
 ollama
+langchain-ollama

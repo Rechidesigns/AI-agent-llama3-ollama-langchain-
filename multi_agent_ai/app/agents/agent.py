@@ -2,9 +2,9 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import psycopg
-from langchain_community.chat_models import ChatOllama
-from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferMemory
+from langchain_ollama import ChatOllama
+from langchain_core.runnables import RunnableSequence, RunnableMap
+from langchain.prompts import PromptTemplate    
 
 try:
     from langchain_postgres import PostgresChatMessageHistory
@@ -14,16 +14,18 @@ except Exception:
 load_dotenv()
 
 EXPIRATION_HOURS = 2  # messages older than this will be deleted
+MAX_HISTORY = 10       # number of previous messages to include
 
 
-def get_conversation(session_id: str):
-    """Build a ConversationChain for a given session UUID"""
+def get_conversation_runnable(session_id: str):
+    """Return a RunnableSequence for a session with recent history."""
+
     sync_connection = psycopg.connect(os.getenv('POSTGRES_URL'))
 
     # Ensure table exists
     PostgresChatMessageHistory.create_tables(sync_connection, 'message_store')
 
-    # Cleanup old messages before loading conversation
+    # Clean up old messages
     cutoff_time = datetime.utcnow() - timedelta(hours=EXPIRATION_HOURS)
     with sync_connection.cursor() as cur:
         cur.execute(
@@ -32,17 +34,24 @@ def get_conversation(session_id: str):
         )
         sync_connection.commit()
 
-    # Build chat history object
-    history = PostgresChatMessageHistory(
-        'message_store',        # table_name
-        session_id,             # session_id (must be UUID)
+    # Fetch last N messages
+    history_store = PostgresChatMessageHistory(
+        'message_store',
+        session_id,
         sync_connection=sync_connection
     )
+    recent_history = "\n".join([m.content for m in history_store.messages[-MAX_HISTORY:]])
 
-    # Use ConversationBufferMemory with Postgres history
-    memory = ConversationBufferMemory(
-        memory_key='history',
-        return_messages=True
+    # Prompt template includes both previous chat and current input
+    prompt = PromptTemplate(
+        input_variables=['text', 'chat_history'],
+        template="""
+Conversation History:
+{chat_history}
+
+New Message:
+{text}
+"""
     )
 
     llm = ChatOllama(
@@ -50,4 +59,8 @@ def get_conversation(session_id: str):
         base_url=os.getenv('OLLAMA_URL')
     )
 
-    return ConversationChain(llm=llm, memory=memory, verbose=False)
+    # RunnableSequence expects each step to be a Runnable or PromptTemplate
+    chain = RunnableSequence(prompt, llm)
+
+    # Return the chain and recent history string
+    return chain, recent_history
