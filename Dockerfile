@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for psycopg3
+# Install system dependencies for psycopg3 / psycopg2
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
 # Copy and install Python dependencies
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r /app/requirements.txt
+    pip install --no-cache-dir -r /app/requirements.txt && \
+    pip install --no-cache-dir psycopg2-binary
 
 # Copy the whole project
 COPY . /app
