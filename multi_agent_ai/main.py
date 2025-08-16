@@ -13,6 +13,7 @@ from .app.agents.summarize_agent import get_summary_agent
 from .app.agents.code_explainer_agent import get_code_explainer
 from .app.agents.finance_agent import get_finance_agent
 from .db import init_db
+from .app.models import Prompt, TextInput, CodeInput, FinanceInput 
 
 load_dotenv()
 app = FastAPI(title="FastAPI LangChain Agent Starter")
@@ -28,17 +29,6 @@ async def run_llm_async(chain, input_text: str):
     return await loop.run_in_executor(executor, lambda: chain.invoke(input_text))
 
 
-class Prompt(BaseModel):
-    message: str
-
-class TextInput(BaseModel):
-    text: str
-
-class CodeInput(BaseModel):
-    code: str
-
-class FinanceInput(BaseModel):
-    data: str
 
 
 @app.post('/chat')
@@ -46,7 +36,13 @@ async def chat(prompt: Prompt, request: Request, response: Response):
     session_id = get_or_create_session_id(request, response)
     chain, recent_history = get_conversation_runnable(session_id=session_id)
 
-    out = await run_llm_async(chain, text=prompt.message, chat_history=recent_history)
+    # Pass a single dict mapping PromptTemplate variables to values
+    input_data = {
+        "text": prompt.message,
+        "chat_history": recent_history
+    }
+
+    out = await run_llm_async(chain, input_data)
     return {"session_id": session_id, "response": out}
 
 
